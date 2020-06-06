@@ -6,8 +6,10 @@ using UnityEngine;
 public class LinearInventory : MonoBehaviour
 {
     public PlayerHandler player;
+    #region Inventory bits
     public static List<Item> inv = new List<Item>();
     public Item selectedItem;
+    public int shopChestSelectedItem;
     public static bool showInv;
     public GameObject invButtonPrefab;
     public GameObject invScroll;
@@ -20,7 +22,18 @@ public class LinearInventory : MonoBehaviour
     public GameObject inventoryPanel;
     public GameObject eatButton;
     public GameObject equipButton;
+    public GameObject offhandButton;
     public GameObject sortButtons;
+    public GameObject sellButton;
+    public GameObject storeButton;
+    public GameObject takeButton;
+    public GameObject buyButton;
+    public GameObject shopChestScroll;
+    public RawImage shopChestIcon;
+    public Text shopChestName, shopChestDescription, shopChestValue;
+    public GameObject shopChestWindow;
+    public GameObject shopChestInv;
+    #endregion
 
     public Vector2 scr;
     public Vector2 scrollPos;
@@ -85,6 +98,8 @@ public class LinearInventory : MonoBehaviour
                 inventory.SetActive(false);
                 playerInvWindow.SetActive(false);
                 sortButtons.SetActive(false);
+                shopChestWindow.SetActive(false);
+                shopChestInv.SetActive(false);
 
                 Time.timeScale = 1;
                 Cursor.lockState = CursorLockMode.Locked;
@@ -183,7 +198,8 @@ public class LinearInventory : MonoBehaviour
 
 
     }
-    void GenerateInventory()
+    #region Player Inventory
+    public void GenerateInventory()
     {
         //getting rid of stuff at the start
         for (int i = invScroll.transform.childCount - 1; i >= 0; i--)
@@ -473,16 +489,35 @@ public class LinearInventory : MonoBehaviour
         {
             eatButton.SetActive(true);
             equipButton.SetActive(false);
+            offhandButton.SetActive(false);
         }
-        else if (selectedItem.Type == ItemType.Apparel || selectedItem.Type == ItemType.Apparel)
+        else if (selectedItem.Type == ItemType.Apparel)
         {
             equipButton.SetActive(true);
+            offhandButton.SetActive(false);
+            eatButton.SetActive(false);
+        }
+        else if (selectedItem.Type == ItemType.Weapon)
+        {
+            equipButton.SetActive(true);
+            offhandButton.SetActive(true);
             eatButton.SetActive(false);
         }
         else
         {
             equipButton.SetActive(false);
+            offhandButton.SetActive(false);
             eatButton.SetActive(false);
+        }
+        if(currentChest)
+        {
+            storeButton.SetActive(true);
+            sellButton.SetActive(false);
+        }
+        else if(currentShop)
+        {
+            storeButton.SetActive(false);
+            sellButton.SetActive(true);
         }
     }
     public void AddItem(int itemID)
@@ -551,7 +586,7 @@ public class LinearInventory : MonoBehaviour
     {
         if (selectedItem.Type == ItemType.Weapon)
         {
-            if (equipmentSlots[2].currentItem == null)
+            if (equipmentSlots[2].currentItem == null || selectedItem.Name != equipmentSlots[2].currentItem.name)
             {
                 //remove what is already equipped
                 if (equipmentSlots[2].currentItem != null)
@@ -562,8 +597,153 @@ public class LinearInventory : MonoBehaviour
                 equipmentSlots[2].currentItem = curItem;
                 curItem.name = selectedItem.Name;
             }
+            else
+            {
+                Destroy(equipmentSlots[2].currentItem);
+            }
+        }
+        else if (selectedItem.Type == ItemType.Apparel)
+        {
+            if (equipmentSlots[0].currentItem == null || selectedItem.Name != equipmentSlots[0].currentItem.name)
+            {
+                //remove what is already equipped
+                if (equipmentSlots[0].currentItem != null)
+                {
+                    Destroy(equipmentSlots[0].currentItem);
+                }
+                GameObject curItem = Instantiate(selectedItem.Mesh, equipmentSlots[0].equipLocation);
+                equipmentSlots[0].currentItem = curItem;
+                curItem.name = selectedItem.Name;
+            }
+            else
+            {
+                Destroy(equipmentSlots[0].currentItem);
+            }
+        }
+        GenerateInventory();
+    }
+    public void OffhandEquip()
+    {
+        if (selectedItem.Type == ItemType.Weapon)
+        {
+            if (equipmentSlots[1].currentItem == null || selectedItem.Name != equipmentSlots[1].currentItem.name)
+            {
+                //remove what is already equipped
+                if (equipmentSlots[1].currentItem != null)
+                {
+                    Destroy(equipmentSlots[1].currentItem);
+                }
+                GameObject curItem = Instantiate(selectedItem.Mesh, equipmentSlots[1].equipLocation);
+                equipmentSlots[1].currentItem = curItem;
+                curItem.name = selectedItem.Name;
+            }
+            else
+            {
+                Destroy(equipmentSlots[1].currentItem);
+            }
+        }
+        GenerateInventory();
+    }
+    #endregion
+    #region Shop & Chest Inventory
+    public void GenerateShopChest()
+    {
+        //getting rid of stuff at the start
+        for (int i = shopChestScroll.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(shopChestScroll.transform.GetChild(i).gameObject);
+        }
+        //adding for each item
+        if(currentChest)
+        {
+            for (int i = 0; i < currentChest.chestInv.Count; i++)
+            {
+                GameObject invButton = Instantiate(invButtonPrefab);
+                invButton.transform.position = new Vector2(shopChestScroll.transform.position.x, shopChestScroll.transform.position.y - 30 * (i + 1));
+                invButton.transform.SetParent(shopChestScroll.transform, true);
+                invButton.GetComponentInChildren<Text>().text = currentChest.chestInv[i].Name;
+                int value = i;
+                invButton.GetComponent<Button>().onClick.AddListener(delegate { SelectShopChest(value); });
+                shopChestWindow.SetActive(true);
+            }
+        }
+        else if(currentShop)
+        {
+            for (int i = 0; i < currentShop.shopInv.Count; i++)
+            {
+                GameObject invButton = Instantiate(invButtonPrefab);
+                invButton.transform.position = new Vector2(shopChestScroll.transform.position.x, shopChestScroll.transform.position.y - 30 * (i + 1));
+                invButton.transform.SetParent(shopChestScroll.transform, true);
+                invButton.GetComponentInChildren<Text>().text = currentShop.shopInv[i].Name;
+                int value = i;
+                invButton.GetComponent<Button>().onClick.AddListener(delegate { SelectShopChest(value); });
+                shopChestWindow.SetActive(true);
+            }
+        }
+        
+    }
+    void SelectShopChest(int shopChestItem)
+    {
+        shopChestSelectedItem = shopChestItem;
+        shopChestInv.SetActive(true);
+        if(currentChest)
+        {
+            takeButton.SetActive(true);
+            buyButton.SetActive(false);
+            shopChestValue.text = "Value: " + currentChest.chestInv[shopChestItem].Value.ToString();
+            shopChestIcon.texture = currentChest.chestInv[shopChestItem].Icon;
+            shopChestName.text = currentChest.chestInv[shopChestItem].Name + " x" + currentChest.chestInv[shopChestItem].Amount;
+            shopChestDescription.text = currentChest.chestInv[shopChestItem].Description;
+        }
+        else if(currentShop)
+        {
+            takeButton.SetActive(false);
+            buyButton.SetActive(true);
+            shopChestValue.text = "Value: " + (currentShop.shopInv[shopChestSelectedItem].Value + (currentShop.shopInv[shopChestSelectedItem].Value / currentShop.valueModifier)).ToString();
+            shopChestIcon.texture = currentShop.shopInv[shopChestItem].Icon;
+            shopChestName.text = currentShop.shopInv[shopChestItem].Name + " x" + currentShop.shopInv[shopChestItem].Amount;
+            shopChestDescription.text = currentShop.shopInv[shopChestItem].Description;
         }
     }
+    public void TakeItem()
+    {
+        AddItem(currentChest.chestInv[shopChestSelectedItem].ID);
+        currentChest.chestInv.RemoveAt(shopChestSelectedItem);
+        shopChestInv.SetActive(false);
+        GenerateInventory();
+        GenerateShopChest();
+    }
+    public void BuyItem()
+    {
+        if (money >= currentShop.shopInv[shopChestSelectedItem].Value + (currentShop.shopInv[shopChestSelectedItem].Value / currentShop.valueModifier))
+        {
+            money -= currentShop.shopInv[shopChestSelectedItem].Value + (currentShop.shopInv[shopChestSelectedItem].Value / currentShop.valueModifier);
+            AddItem(currentShop.shopInv[shopChestSelectedItem].ID);
+            currentShop.shopInv.RemoveAt(shopChestSelectedItem);
+            shopChestInv.SetActive(false);
+            GenerateInventory();
+            GenerateShopChest();
+        }
+    }
+    public void StoreItem()
+    {
+        currentChest.chestInv.Add(selectedItem);
+        RemoveItem();
+        playerInvWindow.SetActive(false);
+        GenerateInventory();
+        GenerateShopChest();
+    }
+    public void SellItem()
+    {
+        money += selectedItem.Value - (selectedItem.Value / currentShop.valueModifier);
+        currentShop.shopInv.Add(selectedItem);
+        RemoveItem();
+        playerInvWindow.SetActive(false);
+        GenerateInventory();
+        GenerateShopChest();
+        money += currentShop.shopInv[shopChestSelectedItem].Value - (currentShop.shopInv[shopChestSelectedItem].Value / currentShop.valueModifier);
+    }
+    #endregion
     /*private void OnGUI()
     {
         if (showInv)

@@ -61,6 +61,9 @@ public class Interact : MonoBehaviour
                         Cursor.lockState = CursorLockMode.None;
                         Cursor.visible = true;
                         LinearInventory.currentChest = chest;
+                        FindObjectOfType<LinearInventory>().GenerateShopChest();
+                        FindObjectOfType<LinearInventory>().inventory.SetActive(true);
+                        FindObjectOfType<LinearInventory>().GenerateInventory();
                     }
                 }
                 #endregion
@@ -76,6 +79,9 @@ public class Interact : MonoBehaviour
                         Cursor.lockState = CursorLockMode.None;
                         Cursor.visible = true;
                         LinearInventory.currentShop = shop;
+                        FindObjectOfType<LinearInventory>().GenerateShopChest();
+                        FindObjectOfType<LinearInventory>().inventory.SetActive(true);
+                        FindObjectOfType<LinearInventory>().GenerateInventory();
                     }
                 }
                 #endregion
