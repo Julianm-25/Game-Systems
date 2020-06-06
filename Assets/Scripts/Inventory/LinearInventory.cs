@@ -10,9 +10,17 @@ public class LinearInventory : MonoBehaviour
     public Item selectedItem;
     public static bool showInv;
     public GameObject invButtonPrefab;
-    public Scrollbar invScroll;
+    public GameObject invScroll;
     public GUIStyle style;
     public GUISkin skin;
+    public RawImage invIcon;
+    public Text invName, invDescription, invValue;
+    public GameObject playerInvWindow;
+    public GameObject inventory;
+    public GameObject inventoryPanel;
+    public GameObject eatButton;
+    public GameObject equipButton;
+    public GameObject sortButtons;
 
     public Vector2 scr;
     public Vector2 scrollPos;
@@ -42,11 +50,11 @@ public class LinearInventory : MonoBehaviour
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.B))
         {
-            inv.Add(ItemData.CreateItem(0));
-            inv.Add(ItemData.CreateItem(1));
-            inv.Add(ItemData.CreateItem(2));
-            inv.Add(ItemData.CreateItem(101));
-            inv.Add(ItemData.CreateItem(204));
+            AddItem(0);
+            AddItem(0);
+            AddItem(101);
+            AddItem(102);
+            AddItem(204);
         }
         if (Input.GetKeyDown(KeyCode.N))
         {
@@ -59,11 +67,14 @@ public class LinearInventory : MonoBehaviour
 #endif
         scr.x = Screen.width / 16;
         scr.y = Screen.height / 9;
-        if(Input.GetKeyDown(KeyCode.Tab) && !PauseMenu.isPaused )
+        if (Input.GetKeyDown(KeyCode.Tab) && !PauseMenu.isPaused)
         {
+            GenerateInventory();
             showInv = !showInv;
             if (showInv)
             {
+                inventory.SetActive(true);
+                sortButtons.SetActive(true);
                 Time.timeScale = 0;
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
@@ -71,10 +82,14 @@ public class LinearInventory : MonoBehaviour
             }
             else
             {
+                inventory.SetActive(false);
+                playerInvWindow.SetActive(false);
+                sortButtons.SetActive(false);
+
                 Time.timeScale = 1;
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
-                if(currentChest)
+                if (currentChest)
                 {
                     currentChest.showChestInv = false;
                     currentChest = null;
@@ -170,14 +185,78 @@ public class LinearInventory : MonoBehaviour
     }
     void GenerateInventory()
     {
+        //getting rid of stuff at the start
+        for (int i = invScroll.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(invScroll.transform.GetChild(i).gameObject);
+        }
+        //adding for each item
         for (int i = 0; i < inv.Count; i++)
         {
-            GameObject invButton = Instantiate(invButtonPrefab);
-            invButton.transform.position = new Vector2(invScroll.transform.position.x, invScroll.transform.position.y - 30 * (i + 1));
-            invButton.transform.SetParent(invScroll.transform, true);
-            invButton.GetComponentInChildren<Text>().text = inv[i].Name;
-            int value = i;
-            //invButton.GetComponent<Button>().onClick.AddListener(delegate { SelectItem(value); });
+            bool sortCorrect = false;
+            switch (sortType)
+            {
+                case "Food":
+                    if (inv[i].Type == ItemType.Food)
+                    {
+                        sortCorrect = true;
+                    }
+                    break;
+                case "Weapon":
+                    if (inv[i].Type == ItemType.Weapon)
+                    {
+                        sortCorrect = true;
+                    }
+                    break;
+                case "Apparel":
+                    if (inv[i].Type == ItemType.Apparel)
+                    {
+                        sortCorrect = true;
+                    }
+                    break;
+                case "Crafting":
+                    if (inv[i].Type == ItemType.Crafting)
+                    {
+                        sortCorrect = true;
+                    }
+                    break;
+                case "Ingredients":
+                    if (inv[i].Type == ItemType.Ingredients)
+                    {
+                        sortCorrect = true;
+                    }
+                    break;
+                case "Potions":
+                    if (inv[i].Type == ItemType.Potions)
+                    {
+                        sortCorrect = true;
+                    }
+                    break;
+                case "Scrolls":
+                    if (inv[i].Type == ItemType.Scrolls)
+                    {
+                        sortCorrect = true;
+                    }
+                    break;
+                case "Quest":
+                    if (inv[i].Type == ItemType.Quest)
+                    {
+                        sortCorrect = true;
+                    }
+                    break;
+                default:
+                    sortCorrect = true;
+                    break;
+            }
+            if (sortCorrect)
+            {
+                GameObject invButton = Instantiate(invButtonPrefab);
+                invButton.transform.position = new Vector2(invScroll.transform.position.x, invScroll.transform.position.y - 30 * (i + 1));
+                invButton.transform.SetParent(invScroll.transform, true);
+                invButton.GetComponentInChildren<Text>().text = inv[i].Name;
+                int value = i;
+                invButton.GetComponent<Button>().onClick.AddListener(delegate { SelectItem(value); });
+            }
         }
     }
     void UseItem()
@@ -321,7 +400,7 @@ public class LinearInventory : MonoBehaviour
                 return;
             }
         }
-        if(currentChest != null)
+        if (currentChest != null)
         {
             if (GUI.Button(new Rect(5.25f * scr.x, 6.75f * scr.y, scr.x, 0.25f * scr.y), "Move Item"))
             {
@@ -380,12 +459,112 @@ public class LinearInventory : MonoBehaviour
     public void Sort(string itemType)
     {
         sortType = itemType;
+        GenerateInventory();
     }
-    void SelectItem()
+    void SelectItem(int invItem)
     {
+        selectedItem = inv[invItem];
+        playerInvWindow.SetActive(true);
+        invIcon.texture = inv[invItem].Icon;
+        invName.text = inv[invItem].Name + " x" + inv[invItem].Amount;
+        invDescription.text = inv[invItem].Description;
+        invValue.text = "Value: " + inv[invItem].Value.ToString();
+        if (selectedItem.Type == ItemType.Food)
+        {
+            eatButton.SetActive(true);
+            equipButton.SetActive(false);
+        }
+        else if (selectedItem.Type == ItemType.Apparel || selectedItem.Type == ItemType.Apparel)
+        {
+            equipButton.SetActive(true);
+            eatButton.SetActive(false);
+        }
+        else
+        {
+            equipButton.SetActive(false);
+            eatButton.SetActive(false);
+        }
+    }
+    public void AddItem(int itemID)
+    {
+        bool stacking = false;
+        for (int i = 0; i < inv.Count; i++)
+        {
+            if (inv[i].ID == itemID)
+            {
+                if (inv[i].Type != ItemType.Weapon && inv[i].Type != ItemType.Apparel)
+                {
+                    inv[i].Amount++;
+                    stacking = true;
+                }
+            }
+        }
+        if (!stacking)
+        {
+            inv.Add(ItemData.CreateItem(itemID));
+        }
+        GenerateInventory();
+    }
+    public void RemoveItem()
+    {
+        if (selectedItem.Amount <= 1)
+        {
+            inv.Remove(selectedItem);
+            playerInvWindow.SetActive(false);
+        }
+        else
+        {
+            selectedItem.Amount--;
+            invName.text = selectedItem.Name + " x" + selectedItem.Amount;
+        }
 
     }
-    private void OnGUI()
+    public void Drop()
+    {
+        for (int i = 0; i < equipmentSlots.Length; i++)
+        {
+            //check slots
+            if (equipmentSlots[i].currentItem != null && selectedItem.Name == equipmentSlots[i].currentItem.name)
+            {
+                //Destroy the one in our equipment
+                Destroy(equipmentSlots[i].currentItem);
+            }
+        }
+        //spawn the item
+        GameObject droppedItem = Instantiate(selectedItem.Mesh, dropLocation.position, Quaternion.identity);
+        droppedItem.name = selectedItem.Name;
+        droppedItem.AddComponent<Rigidbody>().useGravity = true;
+        droppedItem.GetComponent<ItemHandler>().enabled = true;
+        RemoveItem();
+        GenerateInventory();
+    }
+    public void Eat()
+    {
+        if (player.attributes[0].currentValue < player.attributes[0].maxValue)
+        {
+            player.attributes[0].currentValue = Mathf.Clamp(player.attributes[0].currentValue += selectedItem.Heal, 0, player.attributes[0].maxValue);
+            RemoveItem();
+        }
+        GenerateInventory();
+    }
+    public void Equip()
+    {
+        if (selectedItem.Type == ItemType.Weapon)
+        {
+            if (equipmentSlots[2].currentItem == null)
+            {
+                //remove what is already equipped
+                if (equipmentSlots[2].currentItem != null)
+                {
+                    Destroy(equipmentSlots[2].currentItem);
+                }
+                GameObject curItem = Instantiate(selectedItem.Mesh, equipmentSlots[2].equipLocation);
+                equipmentSlots[2].currentItem = curItem;
+                curItem.name = selectedItem.Name;
+            }
+        }
+    }
+    /*private void OnGUI()
     {
         if (showInv)
         {
@@ -403,5 +582,5 @@ public class LinearInventory : MonoBehaviour
                 UseItem();
             }
         }
-    }
+    }*/
 }

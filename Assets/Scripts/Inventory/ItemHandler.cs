@@ -18,11 +18,12 @@ public class ItemHandler : MonoBehaviour
         {
             LinearInventory.money += amount;
         }
-        else if(itemType == ItemType.Weapon || itemType == ItemType.Apparel || itemType == ItemType.Quest)//Weapon, Apparel, Quest
+        FindObjectOfType<LinearInventory>().AddItem(itemId);
+        /*else if(itemType == ItemType.Weapon || itemType == ItemType.Apparel || itemType == ItemType.Quest)//Weapon, Apparel, Quest
         {
-            LinearInventory.inv.Add(ItemData.CreateItem(itemId));
-        }
-        else //Food, Crafting, Ingredients, Potions, Scrolls
+            FindObjectOfType<LinearInventory>().AddItem(itemId);
+        }*/
+        /*else //Food, Crafting, Ingredients, Potions, Scrolls
         {
             int found = 0;
             int addIndex = 0;
@@ -53,7 +54,7 @@ public class ItemHandler : MonoBehaviour
                     }
                 }
             }
-        }
+        }*/
         Destroy(gameObject);
     }
 }
