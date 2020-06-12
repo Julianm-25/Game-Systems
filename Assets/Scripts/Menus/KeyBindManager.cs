@@ -12,6 +12,7 @@ public class KeyBindManager : MonoBehaviour
 
     void Start()
     {
+        keys.Clear();
         keys.Add("Forward",(KeyCode)System.Enum.Parse(typeof(KeyCode),PlayerPrefs.GetString("Forward","W")));
         keys.Add("Left", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Left", "A")));
         keys.Add("Right", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Right", "D")));

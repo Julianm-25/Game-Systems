@@ -33,6 +33,7 @@ public class LinearInventory : MonoBehaviour
     public Text shopChestName, shopChestDescription, shopChestValue;
     public GameObject shopChestWindow;
     public GameObject shopChestInv;
+    public GameObject hotbarButton;
     #endregion
 
     public Vector2 scr;
@@ -118,7 +119,7 @@ public class LinearInventory : MonoBehaviour
             }
         }
     }
-    void Display()
+    /*void Display()
     {
         //if we want to display everything in our inventory
         if (sortType == "All" || sortType == "")
@@ -197,7 +198,7 @@ public class LinearInventory : MonoBehaviour
         }
 
 
-    }
+    }*/
     #region Player Inventory
     public void GenerateInventory()
     {
@@ -275,7 +276,7 @@ public class LinearInventory : MonoBehaviour
             }
         }
     }
-    void UseItem()
+    /*void UseItem()
     {
         GUI.Box(new Rect(4f * scr.x, 0.25f * scr.y, 3.5f * scr.x, 7f * scr.y), "", style);
         GUI.Box(new Rect(4.25f * scr.x, 0.5f * scr.y, 3f * scr.x, 3f * scr.y), selectedItem.Icon);
@@ -471,7 +472,7 @@ public class LinearInventory : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
     public void Sort(string itemType)
     {
         sortType = itemType;
@@ -490,24 +491,28 @@ public class LinearInventory : MonoBehaviour
             eatButton.SetActive(true);
             equipButton.SetActive(false);
             offhandButton.SetActive(false);
+            hotbarButton.SetActive(true);
         }
         else if (selectedItem.Type == ItemType.Apparel)
         {
             equipButton.SetActive(true);
             offhandButton.SetActive(false);
             eatButton.SetActive(false);
+            hotbarButton.SetActive(false);
         }
         else if (selectedItem.Type == ItemType.Weapon)
         {
             equipButton.SetActive(true);
             offhandButton.SetActive(true);
             eatButton.SetActive(false);
+            hotbarButton.SetActive(false);
         }
         else
         {
             equipButton.SetActive(false);
             offhandButton.SetActive(false);
             eatButton.SetActive(false);
+            hotbarButton.SetActive(false);
         }
         if(currentChest)
         {
@@ -581,6 +586,17 @@ public class LinearInventory : MonoBehaviour
             RemoveItem();
         }
         GenerateInventory();
+    }
+    public void AddToHotbar()
+    {
+        if (selectedItem.ID == 0)
+        {
+            GetComponent<Hotbar>().hotbarOne.SetActive(true);
+        }
+        else if (selectedItem.ID == 1)
+        {
+            GetComponent<Hotbar>().hotbarTwo.SetActive(true);
+        }
     }
     public void Equip()
     {

@@ -14,6 +14,7 @@ public class PlayerHandler : Character
     [Header("Level Data")]
     public int level = 0;
     public float currentExp, neededExp, maxExp;
+    public Quest quest;
     [Header("Damage Flash and Death")]
     public Image damageImage;
     public Image deathImage;
@@ -21,13 +22,15 @@ public class PlayerHandler : Character
     public AudioClip deathClip;
     public AudioSource playersAudio;
     public Transform currentCheckPoint;
-    //                                   R G B A
     public Color flashColour = new Color(1,0,0,0.2f);
     public float flashSpeed = 5f;
     public static bool isDead;
     public bool isDamaged;
     public bool canHeal;
     public float healDelayTimer;
+    #region Customisation
+    public int playerClass, playerRace, skinTexture, hairTexture, eyeTexture, mouthTexture, clothesTexture, armourTexture;
+    #endregion
     #endregion
     #region Behaviour
     void Start()
@@ -84,6 +87,17 @@ public class PlayerHandler : Character
     public override void Update()
     {
         base.Update();
+
+        if(currentExp >= maxExp)
+        {
+            level++;
+            currentExp -= maxExp;
+            maxExp += 10;
+            for (int i = 0; i < attributes.Length; i++)
+            {
+                attributes[i].maxValue += 10;
+            }
+        }
         #region Bar Update
 
         for (int i = 0; i < attributes.Length; i++)
@@ -161,6 +175,22 @@ public class PlayerHandler : Character
             }
             PlayerSaveAndLoad.Save();
 
+        }
+    }
+    #endregion
+    #region Quest
+    public void KilledCreature(string enemyTag)
+    {
+        if(quest.goal.questState == QuestState.Active)
+        {
+            quest.goal.EnemyKilled(enemyTag);
+        }
+    }
+    public void ItemCollected(int id)
+    {
+        if (quest.goal.questState == QuestState.Active)
+        {
+            quest.goal.ItemCollected(id);
         }
     }
     #endregion

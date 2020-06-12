@@ -6,6 +6,7 @@ public class Interact : MonoBehaviour
 {
     #region Variables
     //[Header("Player and Camera connection")]
+    public PlayerHandler player;
     #endregion
     private void Update()
     {
@@ -24,7 +25,7 @@ public class Interact : MonoBehaviour
 
                 if (hitInfo.collider.CompareTag("NPC"))
                 {
-                    if(hitInfo.collider.GetComponent<Dialogue>())
+                    if (hitInfo.collider.GetComponent<Dialogue>())
                     {
                         hitInfo.collider.GetComponent<Dialogue>().DialogueAdvance();
                         GetComponent<DialogueController>().reference = hitInfo.collider.GetComponent<Dialogue>();
@@ -33,7 +34,7 @@ public class Interact : MonoBehaviour
                     {
                         hitInfo.collider.GetComponent<OptionLinearDialogue>().showDlg = true;
                     }
-                    
+
                 }
                 #endregion
 
@@ -42,18 +43,19 @@ public class Interact : MonoBehaviour
                 {
                     Debug.Log("Pick Up Item");
                     ItemHandler handler = hitInfo.transform.GetComponent<ItemHandler>();
-                    if(handler != null)
+                    if (handler != null)
                     {
+                        player.quest.goal.ItemCollected(handler.itemId);
                         handler.OnCollection();
                     }
                 }
                 #endregion
 
                 #region Chest
-                if(hitInfo.collider.CompareTag("Chest"))
+                if (hitInfo.collider.CompareTag("Chest"))
                 {
                     Chest chest = hitInfo.transform.GetComponent<Chest>();
-                    if(chest != null)
+                    if (chest != null)
                     {
                         chest.showChestInv = true;
                         LinearInventory.showInv = true;
@@ -83,6 +85,15 @@ public class Interact : MonoBehaviour
                         FindObjectOfType<LinearInventory>().inventory.SetActive(true);
                         FindObjectOfType<LinearInventory>().GenerateInventory();
                     }
+                }
+                #endregion
+                #region Quest Giver
+                if (hitInfo.collider.CompareTag("QuestGiver"))
+                {
+                    Time.timeScale = 0;
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                    FindObjectOfType<QuestGiver>().OpenQuestWindow();
                 }
                 #endregion
             }

@@ -38,6 +38,7 @@ public class PlayerSaveAndLoad : MonoBehaviour
         {
             player.characterStats[i].value = 10;
         }
+        FindObjectOfType<CustomisationGet>().LoadFromPrefs();
     }
     public static void Save()
     {
@@ -65,6 +66,14 @@ public class PlayerSaveAndLoad : MonoBehaviour
         }
 
         player.transform.position = new Vector3(data.pX, data.pY, data.pZ);
-        player.transform.rotation = new Quaternion(data.rX, data.rY, data.rZ,data.rW);        
+        player.transform.rotation = new Quaternion(data.rX, data.rY, data.rZ,data.rW);
+        player.playerClass = data.playerClass;
+        player.playerRace = data.playerRace;
+        player.skinTexture = data.skinTexture;
+        player.hairTexture = data.hairTexture;
+        player.eyeTexture = data.eyeTexture;
+        player.mouthTexture = data.mouthTexture;
+        player.clothesTexture = data.clothesTexture;
+        player.armourTexture = data.armourTexture;
     }
 }

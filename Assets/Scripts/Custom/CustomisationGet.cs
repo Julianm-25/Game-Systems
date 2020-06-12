@@ -7,6 +7,7 @@ public class CustomisationGet : MonoBehaviour
 {
     public PlayerHandler player;
     public Renderer characterMesh;
+
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHandler>();
@@ -19,20 +20,20 @@ public class CustomisationGet : MonoBehaviour
         }
         Load();
     }
-    private void Load()
+    public void Load()
     {
-        if(!PlayerPrefs.HasKey("CharacterName"))
+        if (!PlayerPrefs.HasKey("CharacterName"))
         {
             SceneManager.LoadScene(1);
         }
         player.gameObject.name = PlayerPrefs.GetString("CharacterName");
 
-        SetTexture("Skin", PlayerPrefs.GetInt("SkinIndex"));
-        SetTexture("Hair", PlayerPrefs.GetInt("HairIndex"));
-        SetTexture("Eyes", PlayerPrefs.GetInt("EyesIndex"));
-        SetTexture("Mouth", PlayerPrefs.GetInt("MouthIndex"));
-        SetTexture("Clothes", PlayerPrefs.GetInt("ClothesIndex"));
-        SetTexture("Armour", PlayerPrefs.GetInt("ArmourIndex"));
+        SetTexture("Skin", player.skinTexture);
+        SetTexture("Hair", player.hairTexture);
+        SetTexture("Eyes", player.eyeTexture);
+        SetTexture("Mouth", player.mouthTexture);
+        SetTexture("Clothes", player.clothesTexture);
+        SetTexture("Armour", player.armourTexture);
 
         for (int i = 0; i < player.characterStats.Length; i++)
         {
@@ -73,5 +74,23 @@ public class CustomisationGet : MonoBehaviour
         Material[] mats = characterMesh.materials;
         mats[matIndex].mainTexture = texture;
         characterMesh.materials = mats;
+    }
+    public void LoadFromPrefs()
+    {
+        player.playerClass = PlayerPrefs.GetInt("CharacterClass");
+        player.playerRace = PlayerPrefs.GetInt("CharacterRace");
+        player.skinTexture = PlayerPrefs.GetInt("SkinIndex");
+        player.hairTexture = PlayerPrefs.GetInt("HairIndex");
+        player.eyeTexture = PlayerPrefs.GetInt("EyesIndex");
+        player.mouthTexture = PlayerPrefs.GetInt("MouthIndex");
+        player.clothesTexture = PlayerPrefs.GetInt("ClothesIndex");
+        player.armourTexture = PlayerPrefs.GetInt("ArmourIndex");
+
+        player.name = PlayerPrefs.GetString("CharacterName");
+        for (int i = 0; i < player.characterStats.Length; i++)
+        {
+            player.characterStats[i].value = PlayerPrefs.GetInt(player.characterStats[i].name);
+        }
+        Load();
     }
 }

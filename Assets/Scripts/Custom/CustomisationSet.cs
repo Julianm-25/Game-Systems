@@ -38,12 +38,16 @@ public class CustomisationSet : Stats
     public List<Texture2D> armour = new List<Texture2D>();
     [Header("Index")]
     public int skinIndex;
+    public int raceIndex;
     public int hairIndex, eyesIndex, mouthIndex, clothesIndex, armourIndex;
     [Header("Renderer")]
     public Renderer characterRenderer;
+    public SkinnedMeshRenderer charMesh;
     [Header("Max Index")]
     public int skinMax;
     public int hairMax, eyesMax, mouthMax, clothesMax, armourMax;
+    public Mesh humanMesh;
+    public Mesh treeMesh;
     #endregion
     #region Start
     private void Start()
@@ -108,6 +112,7 @@ public class CustomisationSet : Stats
         SetTexture("Armour", 0);
         #endregion
         ChooseClass(0);
+        PlayerPrefs.DeleteKey("Loaded");
     }
     private void Update()
     {
@@ -363,6 +368,19 @@ public class CustomisationSet : Stats
                 break;
         }
     }
+    public void ChooseRace(int meshIndex)
+    {
+        raceIndex = meshIndex;
+        switch(meshIndex)
+        {
+            case 0:
+                charMesh.sharedMesh = humanMesh;
+                    break;
+            case 1:
+                charMesh.sharedMesh = treeMesh;
+                break;
+        }
+    }
     public void SaveCharacter()
     {
         PlayerPrefs.SetInt("SkinIndex", skinIndex);
@@ -378,7 +396,8 @@ public class CustomisationSet : Stats
         {
             PlayerPrefs.SetInt(characterStats[i].name, (characterStats[i].value + characterStats[i].tempValue));
         }
-        PlayerPrefs.SetString("CharacterClass", selectedClass[selectedIndex]);
+        PlayerPrefs.SetInt("CharacterClass", selectedIndex);
+        PlayerPrefs.SetInt("CharacterRace", raceIndex);
         PlayerPrefs.Save();
     }
     public void ChangeScene(int sceneIndex)

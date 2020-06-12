@@ -10,6 +10,7 @@ TagManager:
   - CharacterMesh
   - Chest
   - Shop
+  - QuestGiver
   layers:
   - Default
   - TransparentFX
