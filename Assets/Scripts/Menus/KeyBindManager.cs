@@ -5,7 +5,7 @@ using UnityEngine;//Unity
 public class KeyBindManager : MonoBehaviour
 {
     public static Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>();
-    public Text forward, left, right, backward, jump, sprint, crouch, interact, inventory;
+    public Text forward, left, right, backward, jump, sprint, crouch, interact, inventory, ability1, ability2;
     public GameObject currentKey;
     public Color32 changed = new Color32(39, 171, 249, 255);
     public Color32 selected = new Color32(239, 116, 36, 255);
@@ -17,12 +17,13 @@ public class KeyBindManager : MonoBehaviour
         keys.Add("Left", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Left", "A")));
         keys.Add("Right", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Right", "D")));
         keys.Add("Backward", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Backward", "S")));
-
         keys.Add("Jump", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Jump", "Space")));
         keys.Add("Sprint", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Sprint", "LeftShift")));
         keys.Add("Crouch", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Crouch", "LeftControl")));
         keys.Add("Interact", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Interact", "E")));
         keys.Add("Inventory", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Inventory", "Tab")));
+        keys.Add("Ability1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Ability1", "R")));
+        keys.Add("Ability2", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Ability2", "T")));
 
         forward.text = keys["Forward"].ToString();
         left.text = keys["Left"].ToString();
@@ -33,6 +34,8 @@ public class KeyBindManager : MonoBehaviour
         crouch.text = keys["Crouch"].ToString();
         interact.text = keys["Interact"].ToString();
         inventory.text = keys["Inventory"].ToString();
+        ability1.text = keys["Ability1"].ToString();
+        ability2.text = keys["Ability2"].ToString();
     }
     private void OnGUI()//Events
     {

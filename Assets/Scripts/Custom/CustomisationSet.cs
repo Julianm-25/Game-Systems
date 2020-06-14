@@ -292,6 +292,7 @@ public class CustomisationSet : Stats
 
     public void ChooseClass(int classIndex)
     {
+        
         switch (classIndex)
         {
             case 0:
@@ -367,6 +368,7 @@ public class CustomisationSet : Stats
                 charClass = CharacterClass.Warlock;
                 break;
         }
+        selectedIndex = classIndex;
     }
     public void ChooseRace(int meshIndex)
     {

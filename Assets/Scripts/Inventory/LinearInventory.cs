@@ -81,7 +81,7 @@ public class LinearInventory : MonoBehaviour
 #endif
         scr.x = Screen.width / 16;
         scr.y = Screen.height / 9;
-        if (Input.GetKeyDown(KeyCode.Tab) && !PauseMenu.isPaused)
+        if (Input.GetKeyDown(KeyBindManager.keys["Inventory"]) && !PauseMenu.isPaused)
         {
             GenerateInventory();
             showInv = !showInv;

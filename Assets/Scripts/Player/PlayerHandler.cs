@@ -36,6 +36,9 @@ public class PlayerHandler : Character
     void Start()
     {
         controller = this.gameObject.GetComponent<CharacterController>();
+        attributes[0].maxValue = 100 + characterStats[2].value;
+        attributes[1].maxValue = 100 + characterStats[2].value;
+        attributes[2].maxValue = 100 + characterStats[3].value;
     }
     public override void Movement()
     {
@@ -61,7 +64,11 @@ public class PlayerHandler : Character
             }
             if (Input.GetKey(KeyBindManager.keys["Sprint"]))
             {
-                speed = sprint;
+                if(attributes[1].currentValue > 0)
+                {
+                    speed = sprint + characterStats[1].value;
+                    attributes[1].currentValue -= Time.deltaTime * 10;
+                }
             }
             else if(Input.GetKey(KeyBindManager.keys["Crouch"]))
             {
@@ -84,19 +91,69 @@ public class PlayerHandler : Character
             controller.Move(moveDirection * Time.deltaTime);
         }       
     }
+    public void Abilities()
+    {
+        if (Input.GetKeyDown(KeyBindManager.keys["Ability1"]) && attributes[2].currentValue >= 20)
+        {
+            if(playerRace == 0)
+            {
+                Debug.Log("Human Ability");
+            }
+            else
+            {
+                Debug.Log("Tree Ability");
+            }
+            attributes[2].currentValue -= 20;
+        }
+        if (Input.GetKeyDown(KeyBindManager.keys["Ability2"]) && attributes[2].currentValue >= 20)
+        {
+            if (playerClass == 0)
+            {
+                Debug.Log("Barbarian Ability");
+            }
+            else if (playerClass == 1)
+            {
+                Debug.Log("Bard Ability");
+            }
+            else if (playerClass == 2)
+            {
+                Debug.Log("Druid Ability");
+            }
+            else if (playerClass == 3)
+            {
+                Debug.Log("Monk Ability");
+            }
+            else if (playerClass == 4)
+            {
+                Debug.Log("Paladin Ability");
+            }
+            else if (playerClass == 5)
+            {
+                Debug.Log("Ranger Ability");
+            }
+            else if (playerClass == 6)
+            {
+                Debug.Log("Sorcerer Ability");
+            }
+            else if (playerClass == 7)
+            {
+                Debug.Log("Warlock Ability");
+            }
+            attributes[2].currentValue -= 20;
+        }
+    }
     public override void Update()
     {
         base.Update();
-
+        Abilities();
         if(currentExp >= maxExp)
         {
             level++;
             currentExp -= maxExp;
             maxExp += 10;
-            for (int i = 0; i < attributes.Length; i++)
-            {
-                attributes[i].maxValue += 10;
-            }
+            attributes[0].maxValue += 1 + characterStats[2].value;
+            attributes[1].maxValue += 1 + characterStats[2].value;
+            attributes[2].maxValue += 1 + characterStats[3].value;
         }
         #region Bar Update
 
@@ -134,6 +191,14 @@ public class PlayerHandler : Character
         {
             HealOverTime();
         }
+        if (attributes[1].currentValue < attributes[1].maxValue)
+        {
+            StaminaOverTime();
+        }
+        if (attributes[2].currentValue < attributes[2].maxValue)
+        {
+            ManaOverTime();
+        }
     }
     public void DamagePlayer(float damage)
     {
@@ -151,7 +216,15 @@ public class PlayerHandler : Character
     }
     public void HealOverTime()
     {
-        attributes[0].currentValue += Time.deltaTime *(attributes[0].regenValue /*plus our constitution value??...Maybe another value*/);
+        attributes[0].currentValue += Time.deltaTime * (attributes[0].regenValue + characterStats[2].value);
+    }
+    public void StaminaOverTime()
+    {
+        attributes[1].currentValue += Time.deltaTime * (attributes[1].regenValue + characterStats[2].value);
+    }
+    public void ManaOverTime()
+    {
+        attributes[2].currentValue += Time.deltaTime * (attributes[2].regenValue + characterStats[3].value);
     }
     public void OnTriggerEnter(Collider other)
     {
