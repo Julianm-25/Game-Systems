@@ -8,11 +8,12 @@ public class PlayerSaveAndLoad : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHandler>();
         if(!PlayerPrefs.HasKey("Loaded"))
         {
-            PlayerPrefs.DeleteAll();
+            //PlayerPrefs.DeleteAll();
             //FirstLoad Function...sets up Player Data
             FirstLoad();
             //Save Data Creates first save file in binary
             Save();
+            PlayerPrefs.DeleteAll();
             //We now have our first save file
             PlayerPrefs.SetInt("Loaded",0);
         }

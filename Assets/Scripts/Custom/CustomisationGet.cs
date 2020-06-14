@@ -6,12 +6,13 @@ using UnityEngine.SceneManagement;
 public class CustomisationGet : MonoBehaviour
 {
     public PlayerHandler player;
-    public Renderer characterMesh;
+    public SkinnedMeshRenderer characterMesh; //used to be Renderer
+    public Mesh humanMesh, treeMesh;
 
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHandler>();
-        characterMesh = GameObject.FindGameObjectWithTag("CharacterMesh").GetComponent<Renderer>();
+        characterMesh = GameObject.FindGameObjectWithTag("CharacterMesh").GetComponent<SkinnedMeshRenderer>();
 
         string[] tempName = new string[] { "Strength", "Dexterity", "Constitution", "Wisdom", "Intelligence", "Charisma" };
         for (int i = 0; i < tempName.Length; i++)
@@ -22,10 +23,10 @@ public class CustomisationGet : MonoBehaviour
     }
     public void Load()
     {
-        if (!PlayerPrefs.HasKey("CharacterName"))
+        /*if (!PlayerPrefs.HasKey("CharacterName"))
         {
             SceneManager.LoadScene(1);
-        }
+        }*/
         player.gameObject.name = PlayerPrefs.GetString("CharacterName");
 
         SetTexture("Skin", player.skinTexture);
@@ -38,6 +39,15 @@ public class CustomisationGet : MonoBehaviour
         for (int i = 0; i < player.characterStats.Length; i++)
         {
             player.characterStats[i].value = PlayerPrefs.GetInt(player.characterStats[i].name);
+        }
+        switch (player.playerRace)
+        {
+            case 0:
+                characterMesh.sharedMesh = humanMesh;
+                break;
+            case 1:
+                characterMesh.sharedMesh = treeMesh;
+                break;
         }
     }
     void SetTexture(string type, int index)
