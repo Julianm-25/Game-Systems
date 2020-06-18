@@ -15,7 +15,6 @@ public static class PlayerBinary
         PlayerData data = new PlayerData(player);
         //write it and convert to bytes for writing to binary
         formatter.Serialize(stream, data);
-        //and we are done
         stream.Close();
     }
     public static PlayerData LoadPlayerData(PlayerHandler player)
@@ -33,7 +32,7 @@ public static class PlayerBinary
             PlayerData data = formatter.Deserialize(stream) as PlayerData;
             //and we are done
             stream.Close();
-            //Oh Wait...send usable data back to the PlayerDataToSave Script
+            //send usable data back to the PlayerDataToSave Script
             return data;
         }
         else
