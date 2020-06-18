@@ -15,7 +15,7 @@ public class Shop : MonoBehaviour
         shopInv.Add(ItemData.CreateItem(Random.Range(0, 2)));
         shopInv.Add(ItemData.CreateItem(Random.Range(100, 103)));
     }
-    private void OnGUI()
+    /*private void OnGUI()
     {
         scr.x = Screen.width / 16;
         scr.y = Screen.height / 9;
@@ -46,6 +46,5 @@ public class Shop : MonoBehaviour
                     }
                 }
             }
-        }
-    }
+        }*/
 }
