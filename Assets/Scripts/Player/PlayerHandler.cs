@@ -7,6 +7,7 @@ using UnityEngine;
 public class PlayerHandler : Character
 {
     #region Variables
+    public static bool controllerMovement;
     [Header("Physics")]
     public CharacterController controller;
     public float gravity = 20f;
@@ -42,25 +43,34 @@ public class PlayerHandler : Character
     }
     public override void Movement()
     {
+        
         if(!isDead)
         {
             float horizontal = 0;
             float vertical = 0;
-            if (Input.GetKey(KeyBindManager.keys["Forward"]))
+            if (!controllerMovement)
             {
-                vertical++;
+                if (Input.GetKey(KeyBindManager.keys["Forward"]))
+                {
+                    vertical++;
+                }
+                if (Input.GetKey(KeyBindManager.keys["Left"]))
+                {
+                    horizontal--;
+                }
+                if (Input.GetKey(KeyBindManager.keys["Right"]))
+                {
+                    horizontal++;
+                }
+                if (Input.GetKey(KeyBindManager.keys["Backward"]))
+                {
+                    vertical--;
+                }
             }
-            if (Input.GetKey(KeyBindManager.keys["Left"]))
+            else
             {
-                horizontal--;
-            }
-            if (Input.GetKey(KeyBindManager.keys["Right"]))
-            {
-                horizontal++;
-            }
-            if (Input.GetKey(KeyBindManager.keys["Backward"]))
-            {
-                vertical--;
+                horizontal = Input.GetAxis("Horizontal");
+                vertical = Input.GetAxis("Vertical");
             }
             if (Input.GetKey(KeyBindManager.keys["Sprint"]))
             {

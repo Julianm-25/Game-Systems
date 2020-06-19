@@ -13,6 +13,8 @@ namespace Player
         public CharacterController controller;
         [Header("Movement Variables")]
         public float speed = 5f;
+        public float sprintSpeed = 10f;
+        public float crouchSpeed = 2f;
         public float jumpSpeed = 8f;
         public Vector3 moveDirection;
 
@@ -25,23 +27,30 @@ namespace Player
         {
             float horizontal = 0;
             float vertical = 0;
-            if (Input.GetKey(KeyBindManager.keys["Forward"]))
+            if (Input.GetKey(KeyCode.W))
             {
                 vertical++;
             }
-            if (Input.GetKey(KeyBindManager.keys["Left"]))
+            if (Input.GetKey(KeyCode.A))
             {
                 horizontal--;
             }
-            if (Input.GetKey(KeyBindManager.keys["Right"]))
+            if (Input.GetKey(KeyCode.D))
             {
                 horizontal++;
             }
-            if (Input.GetKey(KeyBindManager.keys["Backward"]))
+            if (Input.GetButton("down"))
             {
                 vertical--;
             }
-            if (Input.GetKey("Sprint"))
+            if (Input.GetButton("Sprint"))
+            {
+                moveDirection *= sprintSpeed;
+            }
+            if (Input.GetButton("Crouch"))
+            {
+                moveDirection *= crouchSpeed;
+            }
             if (controller.isGrounded)
             {
                 moveDirection = transform.TransformDirection(new Vector3(horizontal, 0, vertical));

@@ -15,7 +15,7 @@ namespace Player
         [Header("Rotation Variables")]
         public RotationalAxis axis = RotationalAxis.MouseX;
         [Range(0, 200)]
-        public float sensetivity = 100;
+        public float sensitivity = 100;
         public float minY = -60, maxY = 60;
         private float _rotY;
         void Start()
@@ -33,16 +33,34 @@ namespace Player
         {
             if(!PlayerHandler.isDead)
             {
-                if (axis == RotationalAxis.MouseX)
+                if (!PlayerHandler.controllerMovement)
                 {
-                    transform.Rotate(0, Input.GetAxis("Mouse X") * sensetivity * Time.deltaTime, 0);
+                    if (axis == RotationalAxis.MouseX)
+                    {
+                        transform.Rotate(0, Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime, 0);
+                    }
+                    else
+                    {
+                        _rotY += Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
+                        _rotY = Mathf.Clamp(_rotY, minY, maxY);
+                        transform.localEulerAngles = new Vector3(-_rotY, 0, 0);
+                    }
                 }
                 else
                 {
-                    _rotY += Input.GetAxis("Mouse Y") * sensetivity * Time.deltaTime;
-                    _rotY = Mathf.Clamp(_rotY, minY, maxY);
-                    transform.localEulerAngles = new Vector3(-_rotY, 0, 0);
+                    if (axis == RotationalAxis.MouseX)
+                    {
+                        transform.Rotate(0, Input.GetAxisRaw("CameraHorizontal") * sensitivity * Time.deltaTime, 0);
+                        
+                    }
+                    else
+                    {
+                        _rotY += Input.GetAxis("CameraVertical") * sensitivity * Time.deltaTime;
+                        _rotY = Mathf.Clamp(_rotY, minY, maxY);
+                        transform.localEulerAngles = new Vector3(-_rotY, 0, 0);
+                    }
                 }
+                
             }           
         }
     }

@@ -97,4 +97,8 @@ public class Menu : MonoBehaviour
         Screen.SetResolution(res.width, res.height, Screen.fullScreen);
     }
     #endregion
+    public void SwapToController(bool controller)
+    {
+        PlayerHandler.controllerMovement = controller;
+    }
 }
